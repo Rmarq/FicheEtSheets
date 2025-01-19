@@ -9,6 +9,33 @@ html(lang='en')
   body
 
     div(class="accordion" id="accordionAdmin")
+
+      div(class="accordion-item")
+        h2(class="accordion-header" id="headingZero")
+          button(class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseZero" aria-expanded="false" aria-controls="collapseZero") Boxes
+        div(id="collapseZero" class="accordion-collapse collapse" aria-labelledby="headingZero" data-bs-parent="#accordionAdmin")
+          div(class="accordion-body")
+            - var objectname = "box";
+            form(hx-post=`/c_${objectname}` hx-swap="beforeend" hx-target=`#${objectname}es` class="mb-3")
+              each m in model_box
+                if m != "id"
+                  input(type="text" placeholder=`${m}` name=`${m}` class="form-control mb-3")
+              button(type="submit" class="btn btn-primary") Add
+            table(class="table table-striped table-hover")
+              thead
+                tr
+                  each m in model_box
+                    th= m
+              tbody(id=`${objectname}es` hx-target="closest tr" hx-swap="outerHTML swap:0.5s")
+                each obj in boxes
+                  tr
+                    each m in model_box
+                      td= obj[m]
+                    td
+                      button(class="btn btn-primary" hx-get=`/e_${objectname}/${obj.id}`)= "Edit " + objectname
+                    td
+                      button(class="btn btn-primary" hx-delete=`/d_${objectname}/${obj.id}`) Delete
+
       div(class="accordion-item")
         h2(class="accordion-header" id="headingOne")
           button(class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne") Posts
