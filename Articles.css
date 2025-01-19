@@ -1,0 +1,86 @@
+
+.posts {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.post>div {
+    text-align: left;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-family: "GothamSSM", Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.7;
+    letter-spacing: 0em;
+    word-break: break-word;
+}
+
+.post>div>p {
+    text-align: left;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-family: "GothamSSM", Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.7;
+    letter-spacing: 0em;
+    word-break: break-word;
+}
+
+.post>p {
+    text-align: left;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-family: "GothamSSM", Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.7;
+    letter-spacing: 0em;
+    word-break: break-word;
+}
+h1 {
+    font-family: "Playfair Display", Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 3rem;
+    color: rgba(160, 111, 28);
+    line-height: 1.25;
+    text-transform: none;
+    letter-spacing: 0em;
+    margin-top: 1rem;
+    text-align: center;
+    padding-bottom: 20px;
+    padding-top: 50px;
+}
+
+h2 {
+    font-family: "GothamSSM", Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: rgba(121, 80, 9, 1);
+    text-align: left;
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    line-height: 1.7;
+    letter-spacing: 0em;
+    word-break: break-word;
+}
+
+.post strong {
+    color: rgba(160, 111, 28);
+}
+
+.post img {
+    max-width: 100%;
+}
+
+.post iframe {
+    max-width: 100%;
+}

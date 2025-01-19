@@ -1,0 +1,12 @@
+#sudo docker build -t ushmi .
+services:
+  app:
+    image: ushmi
+    ports:
+      - 443:443
+      - 80:80
+    working_dir: /app
+    volumes:
+      - ./dev.sqlite:/app/dev.sqlite
+      - /etc/letsencrypt/live/remi-usha.fun/privkey.pem:/etc/letsencrypt/live/remi-usha.fun/privkey.pem
+      - /etc/letsencrypt/live/remi-usha.fun/fullchain.pem:/etc/letsencrypt/live/remi-usha.fun/fullchain.pem
