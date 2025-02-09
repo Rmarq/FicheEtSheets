@@ -14,8 +14,11 @@ html(lang='en')
         a(href="/rsvp") RSVP
         a(href="/admin") Admin
     div(class="rootBoxes" id="rootBoxes")
+        a(href="/fiches/"+(current ? current.toJSON().parentId : ""))
+            h1= current ? current.toJSON().title : "FichesEtSheets"
         each box in rootBoxes
             div(class="box")
-            h2= box.toJSON().title
-            p= box.toJSON().details
+                a(href="/fiches/"+box.toJSON().id)
+                    h2= box.toJSON().title
+                p= box.toJSON().details
             //h1= box.title

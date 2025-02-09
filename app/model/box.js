@@ -30,7 +30,7 @@ Box.init(
             type: DataTypes.INTEGER,
         },
         childrenIds: { // Ids of the boxes contained inside this one.
-            type: DataTypes.ARRAY(DataTypes.INTEGER),
+            type: DataTypes.INTEGER,
         },
     },
     {

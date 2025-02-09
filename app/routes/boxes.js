@@ -13,6 +13,7 @@ module.exports = function (app) {
   app.get("/e_box/:id", checkAdmin(), async (req, res) => {
     const id = req.params.id;
     await Box.findOne({ where: { id: id } }).then((box) => {
+      console.log("DEBUG: childrenIds from DB =", box.childrenIds);
       return res.send(pug.render(`
 tr
   td
@@ -20,7 +21,13 @@ tr
   td
     input(name="title" value=box.title)
   td
+    input(name="kind" value=box.kind)
+  td
     input(name="details" value=box.details)
+  td
+    input(name="parentId" value=box.parentId)
+  td
+    input(name="childrenIds" value=box.childrenIds)
   td
     button(class="btn btn-primary" hx-get="/r_box/${id}") Cancel
   td
@@ -32,7 +39,10 @@ tr
   app.post("/c_box", checkAdmin(), async (req, res) => {
     const box = {
       title: req.body.title,
+      kind: req.body.kind,
       details: req.body.details,
+      parentId: req.body.parentId,
+      childrenIds: req.body.childrenIds,
     };
     await Box.create(box).then((x) => {
       // send id of recently created item
@@ -71,7 +81,10 @@ tr
       item
         .update({
           title: req.body.title,
+          kind: req.body.kind,
           details: req.body.details,
+          parentId: req.body.parentId,
+          childrenIds: req.body.childrenIds,
         })
         .then(() => {
           return res.send(pug.render(`
