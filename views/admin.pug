@@ -37,6 +37,32 @@ html(lang='en')
                       button(class="btn btn-primary" hx-delete=`/d_${objectname}/${obj.id}`) Delete
 
       div(class="accordion-item")
+        h2(class="accordion-header" id="headingFiches")
+          button(class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiches" aria-expanded="false" aria-controls="collapseFiches") Fiches
+        div(id="collapseFiches" class="accordion-collapse collapse" aria-labelledby="headingFiches" data-bs-parent="#accordionAdmin")
+          div(class="accordion-body")
+            - var objectname = "fiche";
+            form(hx-post=`/c_${objectname}` hx-swap="beforeend" hx-target=`#${objectname}s` class="mb-3")
+              each m in model_fiche
+                if m != "id"
+                  input(type="text" placeholder=`${m}` name=`${m}` class="form-control mb-3")
+              button(type="submit" class="btn btn-primary") Add
+            table(class="table table-striped table-hover")
+              thead
+                tr
+                  each m in model_fiche
+                    th= m
+              tbody(id=`${objectname}s` hx-target="closest tr" hx-swap="outerHTML swap:0.5s")
+                each obj in fiches
+                  tr
+                    each m in model_fiche
+                      td= obj[m]
+                    td
+                      button(class="btn btn-primary" hx-get=`/e_${objectname}/${obj.id}`)= "Edit " + objectname
+                    td
+                      button(class="btn btn-primary" hx-delete=`/d_${objectname}/${obj.id}`) Delete
+
+      div(class="accordion-item")
         h2(class="accordion-header" id="headingOne")
           button(class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne") Posts
         div(id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionAdmin")

@@ -13,17 +13,29 @@ module.exports = function (app) {
   app.get("/e_fiche/:id", checkAdmin(), async (req, res) => {
     const id = req.params.id;
     await Fiche.findOne({ where: { id: id } }).then((fiche) => {
+      var timeForInput = fiche.lastDone;
+      if (timeForInput) {
+        timeForInput.setMinutes(timeForInput.getMinutes() - timeForInput.getTimezoneOffset());
+      }
       return res.send(pug.render(`
 tr
-  td ${id}
-  td input(name="title" value=fiche.title)
-  td input(name="kind" value=fiche.kind)
-  td input(name="content" value=fiche.content)
-  td input(name="parentId" value=fiche.parentId)
-  td input(type="datetime-local" name="lastCompletedAt" value=fiche.lastCompletedAt ? fiche.lastCompletedAt.toISOString().slice(0, 16) : "")
-  td button(class="btn btn-primary" hx-get="/r_fiche/${id}") Cancel
-  td button(class="btn btn-primary" hx-put="/u_fiche/${id}" hx-include="closest tr") Save
-`, { fiche: fiche }));
+  td
+    ${id}
+  td
+    input(name="title" value=fiche.title)
+  td
+    input(name="kind" value=fiche.kind)
+  td
+    input(name="content" value=fiche.content)
+  td
+    input(name="parentId" value=fiche.parentId)
+  td
+    input(type="datetime-local" name="lastDone" value=timeForInput ? timeForInput.toISOString().slice(0, 16) : "")
+  td
+    button(class="btn btn-primary" hx-get="/r_fiche/${id}") Cancel
+  td
+    button(class="btn btn-primary" hx-put="/u_fiche/${id}" hx-include="closest tr") Save`, { fiche: fiche, timeForInput: timeForInput }
+      ));
     });
   });
 
@@ -33,15 +45,17 @@ tr
       kind: req.body.kind,
       content: req.body.content,
       parentId: req.body.parentId,
-      lastCompletedAt: req.body.lastCompletedAt ? new Date(req.body.lastCompletedAt) : null,
+      lastDone: req.body.lastDone ? new Date(req.body.lastDone) : null,
     };
     await Fiche.create(fiche).then((x) => {
       return res.send(pug.render(`
 tr
   each m in model ? model : []
     td= obj[m]
-  td button(class="btn btn-primary" hx-get=\`/e_\${objectname}/\${obj.id}\`) Edit
-  td button(class="btn btn-primary" hx-delete=\`/d_\${objectname}/\${obj.id}\`) Delete
+  td
+    button(class="btn btn-primary" hx-get=\`/e_\${objectname}/\${obj.id}\`)= "Edit " + objectname    
+  td 
+    button(class="btn btn-primary" hx-delete=\`/d_\${objectname}/\${obj.id}\`) Delete
 `, { obj: x, model: Object.keys(Fiche.rawAttributes), objectname: "fiche" }));
     });
   });
@@ -53,29 +67,33 @@ tr
 tr
   each m in model ? model : []
     td= obj[m]
-  td button(class="btn btn-primary" hx-get=\`/e_\${objectname}/\${obj.id}\`) Edit
-  td button(class="btn btn-primary" hx-delete=\`/d_\${objectname}/\${obj.id}\`) Delete
+  td
+    button(class="btn btn-primary" hx-get=\`/e_\${objectname}/\${obj.id}\`)= "Edit " + objectname    
+  td 
+    button(class="btn btn-primary" hx-delete=\`/d_\${objectname}/\${obj.id}\`) Delete
 `, { obj: fiche, model: Object.keys(Fiche.rawAttributes), objectname: "fiche" }));
     });
   });
 
   app.put("/u_fiche/:id", checkAdmin(), async (req, res) => {
     const id = req.params.id;
-    await Fiche.findByPk(id).then((fiche) => {
-      fiche.update({
+    await Fiche.findByPk(id).then((item) => {
+      item.update({
         title: req.body.title,
         kind: req.body.kind,
         content: req.body.content,
         parentId: req.body.parentId,
-        lastCompletedAt: req.body.lastCompletedAt ? new Date(req.body.lastCompletedAt) : null,
+        lastDone: req.body.lastDone ? new Date(req.body.lastDone) : null,
       }).then(() => {
         return res.send(pug.render(`
 tr
   each m in model ? model : []
     td= obj[m]
-  td button(class="btn btn-primary" hx-get=\`/e_\${objectname}/\${obj.id}\`) Edit
-  td button(class="btn btn-primary" hx-delete=\`/d_\${objectname}/\${obj.id}\`) Delete
-`, { obj: fiche, model: Object.keys(Fiche.rawAttributes), objectname: "fiche" }));
+  td
+    button(class="btn btn-primary" hx-get=\`/e_\${objectname}/\${obj.id}\`)= "Edit " + objectname
+  td
+    button(class="btn btn-primary" hx-delete=\`/d_\${objectname}/\${obj.id}\`) Delete`, { obj: item, model: Object.keys(Fiche.rawAttributes), objectname: "fiche" }
+        ));
       });
     });
   });

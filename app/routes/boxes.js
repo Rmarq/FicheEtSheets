@@ -13,7 +13,6 @@ module.exports = function (app) {
   app.get("/e_box/:id", checkAdmin(), async (req, res) => {
     const id = req.params.id;
     await Box.findOne({ where: { id: id } }).then((box) => {
-      console.log("DEBUG: childrenIds from DB =", box.childrenIds);
       return res.send(pug.render(`
 tr
   td
