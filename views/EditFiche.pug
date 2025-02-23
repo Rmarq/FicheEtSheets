@@ -1,7 +1,7 @@
 doctype html
 html(lang='en')
     head
-        title Oh My Boxes
+        title Oh My Boxes - Edit
         link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css')
         link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css')
         link(rel="stylesheet" href="/static/css/fiches.css")
@@ -12,18 +12,19 @@ html(lang='en')
                 .header-title
                     h1= currentFiche.toJSON().title
                     .button-group
-                        // Edit Fiche Button
-                        a(href="/editFiche/" + currentFiche.toJSON().id, class="btn btn-primary button-icon")
+                        a(hx-get=`/editTitle/${currentFiche.id}` hx-target="closest .header-title" class="btn btn-primary btn-sm ms-2")
                             i(class="bi bi-pencil-fill")
-                        // Back to box
-                        a(href="/fiches/"+currentFiche.toJSON().parentId, class="btn btn-primary button-icon")
-                            i(class="bi bi-arrow-left")
-                div(class="fiche_content")
-                    - var contentParts = currentFiche.toJSON().content.split(";;");
-                    - var i = 0;
-                    while i < contentParts.length
-                        - var tag = contentParts[i];
-                        - var text = (i + 1 < contentParts.length) ? contentParts[i + 1] : "";
+                        a(href="/fiches/"+currentFiche.toJSON().parentId, class="btn btn-secondary ms-2")
+                            i(class="bi bi-arrow-left-circle-fill")
+
+            div(class="fiche_content")
+                - var contentParts = currentFiche.toJSON().content.split(";;");
+                - var i = 0;
+                while i < contentParts.length
+                    - var tag = contentParts[i];
+                    - var text = (i + 1 < contentParts.length) ? contentParts[i + 1] : "";
+
+                    .header-title
                         if tag === "p"
                             p= text
                         else if tag === "h2"
@@ -40,4 +41,8 @@ html(lang='en')
                                     - j ++;
                         else
                             p= text
-                        - i += 2;
+                                    
+                        a(hx-get=`/editContent/${currentFiche.id}/${i}` hx-target="closest .header-title" class="btn btn-primary btn-sm ms-2")
+                            i(class="bi bi-pencil-fill")
+
+                    - i += 2;

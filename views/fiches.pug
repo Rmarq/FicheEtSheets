@@ -12,8 +12,8 @@ html(lang='en')
                 .header-title
                     h1= current ? current.toJSON().title : "Oh My Boxes"
                     if current
-                        a(href="/fiches/"+current.toJSON().parentId, class="parent-icon")
-                            i(class="bi bi-arrow-left-circle-fill")
+                        a(href="/fiches/"+current.toJSON().parentId, class="btn btn-primary button-icon")
+                            i(class="bi bi-arrow-left")
                 if childBoxes.length > 0
                     ul(class="box-list")
                         each box in childBoxes

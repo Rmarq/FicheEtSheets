@@ -25,21 +25,28 @@ a {
     justify-content: space-between;
     align-items: center;
 }
+
+.button-group {
+    display: flex;
+    gap: 2px; /* Space between buttons */
+    align-items: center;
+}
     
-.parent-icon {
-    font-size: 2em;
+.button-icon {
+    font-size: 1em;
+    padding: 3px 7px;
     cursor: pointer;
-    color: #80b0f0c4;
+    color: #ffffff;
     transition: color 0.3s ease; /* Smooth transition */
 }
-
-.parent-icon:hover {
+/*
+.button-icon:hover {
     color: #0056b3;
 }
 
-.parent-icon:active {
+.button-icon:active {
     color: #004999;
-}
+}*/
 
 .box-list {
     list-style-type: none;
@@ -98,7 +105,7 @@ a {
         font-size: 1.5em;
     }
 
-    .parent-icon {
+    .button-icon {
         font-size: 1.2em;
     }
 }

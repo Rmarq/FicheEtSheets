@@ -125,4 +125,121 @@ tr
       next();
     };
   }
+
+
+
+
+app.get("/editTitle/:id", async (req, res) => {
+    const fiche = await Fiche.findByPk(req.params.id);
+    res.send(`
+        <form hx-post="/saveTitle/${fiche.id}" hx-target="this" hx-swap="outerHTML">
+            <input type="text" name="title" value="${fiche.title}" class="form-control d-inline w-auto">
+            <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-check"></i></button>
+            <button type="button" class="btn btn-danger btn-sm" hx-get="/cancelTitle/${fiche.id}" hx-target="this" hx-swap="outerHTML">
+                <i class="bi bi-x"></i>
+            </button>
+        </form>
+    `);
+});
+
+app.post("/saveTitle/:id", async (req, res) => {
+    const { title } = req.body;
+    await Fiche.update({ title }, { where: { id: req.params.id } });
+    res.send(`
+        <h1>${title}
+            <a hx-get="/editTitle/${req.params.id}" hx-target="this" hx-swap="outerHTML" class="btn btn-primary btn-sm ms-2">
+                <i class="bi bi-pencil-fill"></i>
+            </a>
+        </h1>
+    `);
+});
+
+app.get("/cancelTitle/:id", async (req, res) => {
+    const fiche = await Fiche.findByPk(req.params.id);
+    res.send(`
+        <h1>${fiche.title}
+            <a hx-get="/editTitle/${fiche.id}" hx-target="this" hx-swap="outerHTML" class="btn btn-primary btn-sm ms-2">
+                <i class="bi bi-pencil-fill"></i>
+            </a>
+        </h1>
+    `);
+});
+
+app.get("/editContent/:id/:index", async (req, res) => {
+    const fiche = await Fiche.findByPk(req.params.id);
+    const parts = fiche.content.split(";;");
+    const index = parseInt(req.params.index, 10);
+    var i = 0;
+    while (i < parts.length) {
+      i++;
+    }
+    i = index + 1;
+    const text = parts[index + 1] || "";
+    res.send(`
+        <form hx-post="/saveContent/${fiche.id}/${req.params.index}" hx-target="closest .header-title">
+            <input type="text" name="text" value="${text}" class="form-control d-inline w-auto">
+            <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-check"></i></button>
+            <button type="button" class="btn btn-danger btn-sm" hx-get="/cancelContent/${fiche.id}/${req.params.index}" hx-target="closest .header-title">
+                <i class="bi bi-x"></i>
+            </button>
+        </form>
+    `);
+});
+
+app.post("/saveContent/:id/:index", async (req, res) => {
+    const fiche = await Fiche.findByPk(req.params.id);
+    const index = parseInt(req.params.index, 10);
+    let parts = fiche.content.split(";;");
+    parts[index + 1] = req.body.text;
+    const updatedContent = parts.join(";;");
+
+    await Fiche.update({ content: updatedContent }, { where: { id: req.params.id } });
+    
+    var tag = parts[index];
+    var text = parts[index + 1];
+    var content = "<p>";
+    if (tag === "p") {
+      content = "<p>" + text + "</p>";
+    } else if (tag === "h2") {
+      content = "<h2>" + text + "</h2>";
+    } else if (tag === "h3") {
+      content = "<h3>" + text + "</h3>";
+    } else if (tag === "l") {
+      content = "<ul>" + text + "</ul>";
+    }
+
+    res.send(`
+        ${content}
+        <a hx-get="/editContent/${req.params.id}/${index}" hx-target="closest .header-title" class="btn btn-primary btn-sm ms-2">
+            <i class="bi bi-pencil-fill"></i>
+        </a>
+    `);
+});
+
+app.get("/cancelContent/:id/:index", async (req, res) => {
+    const fiche = await Fiche.findByPk(req.params.id);
+    const index = parseInt(req.params.index, 10);
+    const parts = fiche.content.split(";;");
+    var tag = parts[index];
+    var text = parts[index + 1];
+    var content = text;
+    if (tag === "p") {
+      content = "p= '" + text +"'";
+    } else if (tag === "h2") {
+      content = "h2= '" + text +"'";
+    } else if (tag === "h3") {
+      content = "h3= '" + text +"'";
+    } else if (tag === "l") {
+      content = "ul= '" + text +"'";
+    }
+    res.send(pug.render(`
+${content}
+a(hx-get="/editContent/${req.params.id}/${index}" hx-target="closest .header-title" class="btn btn-primary btn-sm ms-2")
+    i(class="bi bi-pencil-fill")`));
+});
+
+
+
+
+
 };
