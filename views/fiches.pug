@@ -23,3 +23,10 @@ html(lang='en')
                                     p= box.toJSON().details
                 else
                     p No child boxes found.
+                if childFiches && childFiches.length > 0
+                    ul(class="box-list")
+                        each fiche in childFiches
+                            a(href="/fiche/"+fiche.toJSON().id, class="box-link")
+                                li(class="box-item")
+                                    h2= fiche.toJSON().title
+                                    p= fiche.toJSON().lastDone

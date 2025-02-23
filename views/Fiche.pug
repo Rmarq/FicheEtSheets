@@ -1,0 +1,16 @@
+doctype html
+html(lang='en')
+    head
+        title Oh My Boxes
+        link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css')
+        link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css')
+        link(rel="stylesheet" href="/static/css/fiches.css")
+        script(src='https://unpkg.com/htmx.org@2.0.1')
+    body
+        div(class="container")
+            .header-body
+                .header-title
+                    h1= currentFiche.toJSON().title
+                    a(href="/fiches/"+currentFiche.toJSON().parentId, class="parent-icon")
+                        i(class="bi bi-arrow-left-circle-fill")
+                div !{currentFiche.toJSON().content}
