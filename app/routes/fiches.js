@@ -126,16 +126,18 @@ tr
     };
   }
 
-
+// ###################################################### //
+// ################# For Fiches edition ################# //
+// ###################################################### //
 
 
 app.get("/editTitle/:id", async (req, res) => {
     const fiche = await Fiche.findByPk(req.params.id);
     res.send(`
-        <form hx-post="/saveTitle/${fiche.id}" hx-target="this" hx-swap="outerHTML">
+        <form hx-post="/saveTitle/${fiche.id}" hx-target="closest .header-title">
             <input type="text" name="title" value="${fiche.title}" class="form-control d-inline w-auto">
             <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-check"></i></button>
-            <button type="button" class="btn btn-danger btn-sm" hx-get="/cancelTitle/${fiche.id}" hx-target="this" hx-swap="outerHTML">
+            <button type="button" class="btn btn-danger btn-sm" hx-get="/cancelTitle/${fiche.id}" hx-target="closest .header-title">
                 <i class="bi bi-x"></i>
             </button>
         </form>
@@ -145,24 +147,24 @@ app.get("/editTitle/:id", async (req, res) => {
 app.post("/saveTitle/:id", async (req, res) => {
     const { title } = req.body;
     await Fiche.update({ title }, { where: { id: req.params.id } });
-    res.send(`
-        <h1>${title}
-            <a hx-get="/editTitle/${req.params.id}" hx-target="this" hx-swap="outerHTML" class="btn btn-primary btn-sm ms-2">
-                <i class="bi bi-pencil-fill"></i>
-            </a>
-        </h1>
-    `);
+    res.send(pug.render(`
+h1= '${title}'
+.button-group
+    a(hx-get="/editTitle/${req.params.id}" hx-target="closest .header-title" class="btn btn-primary btn-sm ms-2")
+        i(class="bi bi-pencil-fill")
+    a(href="/fiche/${req.params.id}", class="btn btn-secondary ms-2")
+        i(class="bi bi-arrow-left-circle-fill")`));
 });
 
 app.get("/cancelTitle/:id", async (req, res) => {
     const fiche = await Fiche.findByPk(req.params.id);
-    res.send(`
-        <h1>${fiche.title}
-            <a hx-get="/editTitle/${fiche.id}" hx-target="this" hx-swap="outerHTML" class="btn btn-primary btn-sm ms-2">
-                <i class="bi bi-pencil-fill"></i>
-            </a>
-        </h1>
-    `);
+    res.send(pug.render(`
+h1= '${fiche.title}'
+.button-group
+    a(hx-get="/editTitle/${fiche.id}" hx-target="closest .header-title" class="btn btn-primary btn-sm ms-2")
+        i(class="bi bi-pencil-fill")
+    a(href="/fiche/${fiche.id}", class="btn btn-secondary ms-2")
+        i(class="bi bi-arrow-left-circle-fill")`));
 });
 
 app.get("/editContent/:id/:index", async (req, res) => {
@@ -174,16 +176,42 @@ app.get("/editContent/:id/:index", async (req, res) => {
       i++;
     }
     i = index + 1;
+    const tag = parts[index] || "";
     const text = parts[index + 1] || "";
-    res.send(`
-        <form hx-post="/saveContent/${fiche.id}/${req.params.index}" hx-target="closest .header-title">
-            <input type="text" name="text" value="${text}" class="form-control d-inline w-auto">
-            <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-check"></i></button>
-            <button type="button" class="btn btn-danger btn-sm" hx-get="/cancelContent/${fiche.id}/${req.params.index}" hx-target="closest .header-title">
-                <i class="bi bi-x"></i>
-            </button>
-        </form>
-    `);
+    if (tag === "p") {
+      const lineCount = text.split("\n").length;
+      const textareaRows = Math.max(lineCount + 1, 2); // At least 2 rows
+      res.send(`
+          <form hx-post="/saveContent/${fiche.id}/${req.params.index}" hx-target="closest .header-title">
+              <textarea id="text" name="text" value="${text}" class="form-control" rows="${textareaRows}" 
+                          oninput="autoExpand(this)">${text}</textarea>
+              <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-check"></i></button>
+              <button type="button" class="btn btn-danger btn-sm" hx-get="/cancelContent/${fiche.id}/${req.params.index}" hx-target="closest .header-title">
+                  <i class="bi bi-x"></i>
+              </button>
+          </form>
+          <script>
+              function autoExpand(textarea) {
+                  textarea.style.height = 'auto'; 
+                  textarea.style.height = (textarea.scrollHeight + 10) + 'px'; 
+              }
+              document.addEventListener("DOMContentLoaded", function() {
+                  const textarea = document.getElementById("text");
+                  if (textarea) autoExpand(textarea); // Expand on load
+              });
+          </script>
+      `);
+    } else {
+      res.send(`
+          <form hx-post="/saveContent/${fiche.id}/${req.params.index}" hx-target="closest .header-title">
+              <input type="text" name="text" value="${text}" class="form-control d-inline w-auto">
+              <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-check"></i></button>
+              <button type="button" class="btn btn-danger btn-sm" hx-get="/cancelContent/${fiche.id}/${req.params.index}" hx-target="closest .header-title">
+                  <i class="bi bi-x"></i>
+              </button>
+          </form>
+      `);
+    }
 });
 
 app.post("/saveContent/:id/:index", async (req, res) => {
@@ -205,7 +233,12 @@ app.post("/saveContent/:id/:index", async (req, res) => {
     } else if (tag === "h3") {
       content = "<h3>" + text + "</h3>";
     } else if (tag === "l") {
-      content = "<ul>" + text + "</ul>";
+      content = "<ul>"
+      let listParts = text.split(";&");
+      listParts.forEach(element => {
+        content += "<li>" + element + "</li>";
+      });
+      content += "</ul>";
     }
 
     res.send(`
@@ -221,7 +254,8 @@ app.get("/cancelContent/:id/:index", async (req, res) => {
     const index = parseInt(req.params.index, 10);
     const parts = fiche.content.split(";;");
     var tag = parts[index];
-    var text = parts[index + 1];
+    //var text = parts[index + 1];
+    var text = parts[index + 1].replace(/'/g, "\\'").replace(/\n/g, "&#10;");
     var content = text;
     if (tag === "p") {
       content = "p= '" + text +"'";
@@ -230,7 +264,15 @@ app.get("/cancelContent/:id/:index", async (req, res) => {
     } else if (tag === "h3") {
       content = "h3= '" + text +"'";
     } else if (tag === "l") {
-      content = "ul= '" + text +"'";
+      //content = "ul= '" + text +"'";
+
+      
+      content = "ul" + "\n";
+      let listParts = text.split(";&");
+      listParts.forEach(element => {
+        content += "    li= '" + element + "'\n";
+      });
+
     }
     res.send(pug.render(`
 ${content}

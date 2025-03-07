@@ -126,4 +126,22 @@ tr
       next();
     }
   }
+
+
+// ###################################################### //
+// ################# For Boxes edition ################# //
+// ###################################################### //
+app.post("/moveBox/:boxId/:newParentId", async (req, res) => {
+  console.log("moveBox in boxes");
+  const { boxId, newParentId } = req.params;
+  try {
+      await Box.update({ parentId: newParentId }, { where: { id: boxId } });
+      res.json({ success: true });
+  } catch (error) {
+    console.log("error catched = " + error);
+      res.json({ success: false, error: error.message });
+  }
+});
+
+
 }

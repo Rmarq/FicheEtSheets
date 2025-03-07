@@ -14,7 +14,7 @@ html(lang='en')
                     .button-group
                         a(hx-get=`/editTitle/${currentFiche.id}` hx-target="closest .header-title" class="btn btn-primary btn-sm ms-2")
                             i(class="bi bi-pencil-fill")
-                        a(href="/fiches/"+currentFiche.toJSON().parentId, class="btn btn-secondary ms-2")
+                        a(href="/fiche/"+currentFiche.id, class="btn btn-secondary ms-2")
                             i(class="bi bi-arrow-left-circle-fill")
 
             div(class="fiche_content")
@@ -26,7 +26,7 @@ html(lang='en')
 
                     .header-title
                         if tag === "p"
-                            p= text
+                            p !{text.replace(/\n/g, '<br>')}
                         else if tag === "h2"
                             h2= text
                         else if tag === "h3"
@@ -40,7 +40,7 @@ html(lang='en')
                                     li= ele
                                     - j ++;
                         else
-                            p= text
+                            p !{text.replace(/\n/g, '<br>')}
                                     
                         a(hx-get=`/editContent/${currentFiche.id}/${i}` hx-target="closest .header-title" class="btn btn-primary btn-sm ms-2")
                             i(class="bi bi-pencil-fill")

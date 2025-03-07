@@ -25,7 +25,7 @@ html(lang='en')
                         - var tag = contentParts[i];
                         - var text = (i + 1 < contentParts.length) ? contentParts[i + 1] : "";
                         if tag === "p"
-                            p= text
+                            p !{text.replace(/\n/g, '<br>')}
                         else if tag === "h2"
                             h2= text
                         else if tag === "h3"
@@ -39,5 +39,5 @@ html(lang='en')
                                     li= ele
                                     - j ++;
                         else
-                            p= text
+                            p !{text.replace(/\n/g, '<br>')}
                         - i += 2;
