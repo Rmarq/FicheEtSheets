@@ -1,7 +1,55 @@
+/*
 const Box = require("../model/box");
+const Fiche = require("../model/fiche");*/
 const pug = require('pug');
 
+const { Op } = require("sequelize");
+
+const { checkAdmin, getLocale } = require("../backend/common");
+const BoxUtils = require("../backend/Box");
+const FicheUtils = require("../backend/Fiche");
+
 module.exports = function (app) {
+
+// Routes for the pages
+
+  app.get("/fiches/:id?", async (req, res) => { // The '?' makes ':id' optional
+    const id = req.params.id || null;
+    var language = getLocale(req);
+    if (id != null) {
+      const currentBox = await BoxUtils.getBox(id);
+      const childBoxes = await BoxUtils.getChildren(id);
+      const childFiches = await FicheUtils.getChildren(id);
+      return res.render("Box", { lang: language, childBoxes: childBoxes.rows, childFiches: childFiches.rows, current: currentBox });
+    }
+    const childBoxes = await BoxUtils.getChildren(null);
+    return res.render("Box", { lang: language, childBoxes: childBoxes.rows, childFiches: null, current: null });
+  });
+
+
+
+// ###################################################### //
+// ################# For Boxes edition ################# //
+// ###################################################### //
+app.post("/moveBox/:boxId/:newParentId", async (req, res) => {
+  console.log("moveBox in boxes");
+  const { boxId, newParentId } = req.params;
+  if (await BoxUtils.moveBox(boxId, newParentId) != null) {
+      res.json({ success: true });
+  } else {
+      res.json({ success: false });
+  }
+});
+
+
+
+
+
+
+
+
+
+/*/ Routes for the admin pages
   app.delete("/d_box/:id", checkAdmin(), async (req, res) => {
     const id = req.params.id;
     await Box.findOne({ where: { id: id } }).then((box) => {
@@ -99,49 +147,8 @@ tr
     });
   });
 
-  function checkAdmin() {
-    return (req, res, next) => {
-      const reject = () => {
-        res.setHeader("www-authenticate", "Basic");
-        res.sendStatus(401);
-      };
+// FIN Routes for the admin pages */
 
-      const authorization = req.headers.authorization;
-
-      if (!authorization) {
-        return reject();
-      }
-
-      const [username, password] = Buffer.from(
-        authorization.replace("Basic ", ""),
-        "base64"
-      )
-        .toString()
-        .split(":");
-
-      if (!(username === "Rémi" && password === "Marquerie")) {
-        return reject();
-      }
-
-      next();
-    }
-  }
-
-
-// ###################################################### //
-// ################# For Boxes edition ################# //
-// ###################################################### //
-app.post("/moveBox/:boxId/:newParentId", async (req, res) => {
-  console.log("moveBox in boxes");
-  const { boxId, newParentId } = req.params;
-  try {
-      await Box.update({ parentId: newParentId }, { where: { id: boxId } });
-      res.json({ success: true });
-  } catch (error) {
-    console.log("error catched = " + error);
-      res.json({ success: false, error: error.message });
-  }
-});
 
 
 }
