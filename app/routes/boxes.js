@@ -1,6 +1,7 @@
-/*
+//* To keep for admin page
 const Box = require("../model/box");
-const Fiche = require("../model/fiche");*/
+const Fiche = require("../model/fiche");
+//*/
 const pug = require('pug');
 
 const { Op } = require("sequelize");
@@ -11,8 +12,7 @@ const FicheUtils = require("../backend/Fiche");
 
 module.exports = function (app) {
 
-// Routes for the pages
-
+  // Route rendering a box.
   app.get("/fiches/:id?", async (req, res) => { // The '?' makes ':id' optional
     const id = req.params.id || null;
     var language = getLocale(req);
@@ -25,31 +25,66 @@ module.exports = function (app) {
     const childBoxes = await BoxUtils.getChildren(null);
     return res.render("Box", { lang: language, childBoxes: childBoxes.rows, childFiches: null, current: null });
   });
+  
+  // Route rendering a box for edition.
+  app.get("/EditBox/:parentId?/:id?", async (req, res) => { // The '?' makes ':id' optional
+    const parentId = req.params.parentId || 0;
+    const id = req.params.id || null;
+    var language = getLocale(req);
+    if (id != null) {
+      const currentBox = await BoxUtils.getBox(id);
+      return res.render("EditBox", { lang: language, parentId: parentId, current: currentBox }); // Editing the current box
+    }
+    return res.render("EditBox", { lang: language, parentId: parentId, current: null }); // creating a new box
+  });
+
+  // Route handleling save box.
+  app.post("/saveBox", async (req, res) => {
+    const { id, title, details, parentId } = req.body;
+    console.log("saveBox id " + id + ", title " + title + ", details " + details + ", parentId " + parentId);
+
+    try {
+        let box;
+        if (id) {
+            // Updating existing box
+            box = await BoxUtils.updateBox(id, { title, details, parentId });
+        } else {
+            // Creating a new box
+            box = await BoxUtils.createBox({ title, details, parentId });
+        }
+
+        if (box) {
+            res.redirect(`/fiches/${box.id}`);
+        } else {
+            res.status(500).send("Error saving the box.");
+        }
+    } catch (error) {
+        console.error("Error saving box:", error);
+        res.status(500).send("Internal server error.");
+    }
+  });
+
+
+  // Route handling box drag/drop.
+  app.post("/moveBox/:boxId/:newParentId", async (req, res) => {
+    console.log("moveBox in boxes");
+    const { boxId, newParentId } = req.params;
+    if (await BoxUtils.moveBox(boxId, newParentId) != null) {
+        res.json({ success: true });
+    } else {
+        res.json({ success: false });
+    }
+  });
 
 
 
-// ###################################################### //
-// ################# For Boxes edition ################# //
-// ###################################################### //
-app.post("/moveBox/:boxId/:newParentId", async (req, res) => {
-  console.log("moveBox in boxes");
-  const { boxId, newParentId } = req.params;
-  if (await BoxUtils.moveBox(boxId, newParentId) != null) {
-      res.json({ success: true });
-  } else {
-      res.json({ success: false });
-  }
-});
 
 
 
 
 
 
-
-
-
-/*/ Routes for the admin pages
+// Routes for the admin pages
   app.delete("/d_box/:id", checkAdmin(), async (req, res) => {
     const id = req.params.id;
     await Box.findOne({ where: { id: id } }).then((box) => {

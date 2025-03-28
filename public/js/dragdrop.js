@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         box.addEventListener("drop", function (event) {
+            console.log("DEBUG drop");
             event.preventDefault();
             handleDrop(event, this);
         });
@@ -78,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         function handleDrop(event, targetBox) {
             let draggedBoxId = draggedBox.getAttribute("data-box-id");
-            let targetBoxId = targetBox.getAttribute("data-box-id");
+            let targetBoxId = targetBox.getAttribute("data-box-id") || 0;
             console.log("draggedBoxId = " + draggedBoxId + ", targetBoxId = " + targetBoxId);
 
             if (draggedBoxId !== targetBoxId) {

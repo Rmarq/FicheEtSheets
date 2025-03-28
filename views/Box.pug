@@ -10,11 +10,28 @@ html(lang='en')
     body
         div(class="container")
             .header-body
-                .header-title
+                div(class="header-title box-drag" data-box-id=current ? current.toJSON().parentId : null)
                     h1= current ? current.toJSON().title : "Oh My Boxes"
+                    p= current ? current.toJSON().details : ""
                     if current
-                        a(href="/fiches/"+current.toJSON().parentId, class="btn btn-primary button-icon")
-                            i(class="bi bi-arrow-left")
+                        - var parent = current.toJSON().parentId || 0;
+                        .button-group
+                            a(href="/EditBox/"+current.toJSON().id, class="btn btn-success  button-icon")
+                                i(class="bi bi-plus-square")
+                            a(href="/EditBox/"+parent+"/"+current.toJSON().id, class="btn btn-primary button-icon")
+                                i(class="bi bi-pencil-fill")
+                            a(href="/fiches/"+current.toJSON().id, class="btn btn-danger button-icon")
+                                i(class="bi bi-trash")
+                            span.separator
+                            a(href="/fiches/"+current.toJSON().parentId, class="btn btn-primary button-icon")
+                                i(class="bi bi-box-arrow-up")
+                            a(href="/fiches/", class="btn btn-primary button-icon")
+                                i(class="bi bi-house-fill")
+                    else 
+                        .button-group
+                            a(href="/EditBox", class="btn btn-success  button-icon")
+                                i(class="bi bi-plus-square")
+
                 if childBoxes.length > 0
                     ul(class="box-list")
                         each box in childBoxes

@@ -114,3 +114,49 @@ form {
     display: flex;
     width: 100%;
 }
+
+#editBoxForm {
+    display: grid; 
+    grid-template-columns: 1fr 2fr; /* Label takes 1/3, input takes 2/3 */
+    gap: 10px;
+    align-items: center;
+    /*max-width: 500px; /* Adjust as needed */
+}
+
+#editBoxForm label {
+    font-weight: bold;
+    text-align: right;
+}
+
+#editBoxForm input,
+#editBoxForm textarea {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#editBoxForm textarea {
+    resize: vertical; /* Allow resizing */
+}
+
+@media (max-width: 600px) {
+    #editBoxForm {
+        grid-template-columns: 1fr; /* Stack labels on small screens */
+    }
+
+    #editBoxForm label {
+        text-align: left;
+    }
+}
+
+
+
+.separator {
+    display: inline-block;
+    width: 2px; /* Line thickness */
+    height: 28px; /* Make it match button height */
+    background-color: rgba(0, 0, 0); /* Light gray */
+    margin: 0 3px; /* Space between buttons */
+    vertical-align: middle;
+}
